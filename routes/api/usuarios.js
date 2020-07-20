@@ -1,21 +1,24 @@
 const router=require('express').Router();
 const jwt= require('jsonwebtoken');
-const secreto=require('../middlewares');
+const {secreto,verificar_token,validacion_usuario,validacion_admin,validacion_constrasena, usuario_existente}=require('../middlewares');
+const {check, validacion_resultado, validationResult}=require('express-validator');
 const connection= require('../../db');
 const sequelize=connection();
 
 
-router.post('/login', (req,res)=>{
 
-    const correo=req.query.correo;
 
-  
+router.post('/login', validacion_usuario,validacion_constrasena,(req,res)=>{
+
+    const correo=req.body;
+    
+ 
     const token=jwt.sign(correo,secreto)
     res.json({token:token});
 })
 
 
-router.get('/registro', async (req,res)=>{
+router.get('/registro', verificar_token, validacion_admin, async (req,res)=>{
 
     const email=req.query.correo;
 
@@ -38,10 +41,30 @@ router.get('/registro', async (req,res)=>{
 })
 
 
-router.post('/registro',(req, res)=>{
+router.post('/registro',[
+    
+    check('nombre_apellido','el nombre es obligagorio').not().isEmpty(),
+    check('contrasena','la contraseña es obligatoria').not().isEmpty(),
+    check('usuario','El usuario  es obligatorio').not().isEmpty(),
+    check('correo','El correo debe ser correcto').isEmail()
+
+
+
+],usuario_existente,(req, res)=>{
+
+    const errores=validationResult(req);
+
+   if(!errores.isEmpty()){
+
+    return res.status(422).json({message:errores.array()})
+
+   }
 
     const query='INSERT INTO usurario (nombre_apellido, correo, telefono, direccion, usuario , contrasena, admon) VALUES (?,?,?,?,?,?,0)'
     const{nombre_apellido, correo, telefono, direccion, usuario , contrasena}=req.body;
+
+
+
     console.log(query);
 
     sequelize.query(query,{replacements:[nombre_apellido, correo, telefono, direccion, usuario , contrasena]})

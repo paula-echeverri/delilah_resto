@@ -1,10 +1,13 @@
 
 const router=require('express').Router();
+
+
+const {secreto,verificar_token,validacion_usuario,validacion_admin,validacion_constrasena}=require('../middlewares');
 const connection= require('../../db');
 const sequelize=connection();
 
 
-router.get('/', async (req, res)=>{
+router.get('/',verificar_token, async (req, res)=>{
 
     const query= 'SELECT * FROM productos';
     try{
@@ -19,7 +22,7 @@ router.get('/', async (req, res)=>{
 })
 
 
-router.put('/:id_plato', (req,res)=>{
+router.put('/:id_plato',verificar_token,validacion_admin, (req,res)=>{
 
 
 const {id_plato}=req.params;
@@ -37,35 +40,10 @@ sequelize.query(myQuery,{replacements: [nombre_producto,precio,id_plato]})
 
 
 
-/*
-router.put('/productos/:id', (req,res)=>{
-
-const id=req.params.id;
-const{ nombre_productos, precio }=req.body;
-
-let producto=productos.find(elem=>{
-
-    if(elem.id==Number(id)){
-
-        return elem;
-    }
-})
-
-if (producto){
-
-    producto.nombre_productos=nombre_productos;
-    producto.precio=precio;
-    res.json(producto);
-}else{
-
-    res.status(404).json(` no puedes modificar el producto`)
-
-}
-
-})*/
 
 
-router.delete('/:id_plato',(req,res)=>{
+
+router.delete('/:id_plato', verificar_token,validacion_admin,(req,res)=>{
 
 const {id_plato}=req.params;
 const myQuery=  `DELETE FROM productos WHERE id_plato = ? `;
@@ -77,7 +55,7 @@ sequelize.query(myQuery,{replacements:  [id_plato]})
 });
 
 
-router.post('/', (req,res)=>{
+router.post('/',verificar_token,validacion_admin, (req,res)=>{
 
     const query='INSERT INTO productos (nombre_producto,precio) VALUES (?,?)';
     const {nombre_producto,precio}=req.body;
