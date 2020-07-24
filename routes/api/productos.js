@@ -1,7 +1,5 @@
 
 const router=require('express').Router();
-
-
 const {secreto,verificar_token,validacion_usuario,validacion_admin,validacion_constrasena}=require('../middlewares');
 const connection= require('../../db');
 const sequelize=connection();

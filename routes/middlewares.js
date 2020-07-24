@@ -55,7 +55,7 @@ const validacion_admin=(req, res, next)=>{
             next();
         }else{
 
-            res.status(404).json({message:'Solo los admon tienen acceso a los registro'})
+            res.status(404).json({message:'Solo los admon tienen acceso a esta información'})
 
 
         }
@@ -135,7 +135,7 @@ const verificar_token= (req, res, next)=>{
 
         next();
 
-           /* req.query.correo=verificar_token.;*/
+          
          
         
     }catch(e){
