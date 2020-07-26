@@ -1,0 +1,631 @@
+openapi: 3.0.0
+info:
+  title: Delihah API
+  description: API para  crear pedidos al restaurante Delilah y como administrador  tener
+    acceso a todo el CRUD
+  contact:
+    name: Paula Echeverri
+    email: paeb08@gmail.com
+  license:
+    name: Apache 2.0
+    url: www.apache.com
+  version: 1.0.0
+servers:
+- url: https://virtserver.swaggerhub.com/PaulaE89/DelilahResto/1.0.0
+  description: SwaggerHub API Auto Mocking
+- url: https://virtserver.swaggerhub.com/PaulaE89/DelliahResto/1.0.0
+  description: SwaggerHub API Auto Mocking
+paths:
+  /productos:
+    get:
+      tags:
+      - Cliente
+      summary: Listar todos los platos.
+      parameters:
+      - name: Token
+        in: header
+        description: Se debe tener un token para consultar la lista de platos
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: Succesful request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200'
+        "401":
+          description: Usuarios y/o no validos
+          content:
+            aplication/json:
+              schema:
+                type: string
+                example: '{"mensaje":" No hay token el requerimiento"}'
+  /registro:
+    post:
+      tags:
+      - Cliente
+      summary: crear usuario cliente
+      requestBody:
+        description: Todos los campos se requieren.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/registro_cliente'
+        required: true
+      responses:
+        "200":
+          description: Request exitoso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/registro_cliente'
+        "409":
+          description: usuario ya existe
+          content:
+            aplication/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_409'
+  /login:
+    post:
+      tags:
+      - Cliente
+      summary: Logeo del cliente
+      requestBody:
+        description: El campo usuario y contrasena se requiere.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/body'
+        required: true
+      responses:
+        "200":
+          description: usuario y contrasena existoso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_1'
+        "404":
+          description: Usuarios y/o no validos
+          content:
+            aplication/json:
+              schema:
+                type: string
+                example: '{"mensaje":"Intenta nuevamente en ingresar tu contraseña
+                  o correo, no son validos"}'
+  /pedidos/mi_pedido:
+    post:
+      tags:
+      - Cliente
+      summary: Solicitud del pedido por parte del cliente
+      parameters:
+      - name: Token
+        in: header
+        description: Se debe tener un token para realizar el peido
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+      requestBody:
+        description: Los campos son obligatorios
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/pedido'
+        required: true
+      responses:
+        "200":
+          description: pedido exitoso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_2'
+        "204":
+          description: No se encuentra el plato elegido
+          content:
+            aplication/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_204'
+  /admon/login:
+    post:
+      tags:
+      - Administrador
+      summary: Logeo del admon
+      requestBody:
+        description: El campo usuario y contrasena se requiere.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/body_1'
+        required: true
+      responses:
+        "200":
+          description: usuario y contrasena existoso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_3'
+        "401":
+          description: Usuarios y/o no validos
+          content:
+            aplication/json:
+              schema:
+                type: string
+                example: '{"mensaje":"Intenta nuevamente en ingresar tu contrasena
+                  o correo, no son validos"}'
+  /admon/productos:
+    get:
+      tags:
+      - Administrador
+      parameters:
+      - name: Token
+        in: header
+        description: Se debe tener un token para consultar la lista de platos
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: Succesful request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200'
+  /productos/id_plato:
+    get:
+      tags:
+      - Administrador
+      parameters:
+      - name: Token
+        in: header
+        description: Se debe tener un token para consultar la lista de platos
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+      - name: id_plato
+        in: query
+        description: id del plato
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: integer
+      responses:
+        "200":
+          description: El token es del admon
+          content:
+            aplication/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_4'
+        "204":
+          description: No se encuentra platos
+          content:
+            aplication/json:
+              schema:
+                type: string
+                example: '{"mensaje":"Error 204. No se encuentra platos disponibles"}'
+  /admon/pedidos:
+    get:
+      tags:
+      - Administrador
+      summary: La lista de todos los pedidos
+      parameters:
+      - name: Token
+        in: header
+        description: Se debe tener un token para consultar la lista de todos los pedidos
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: El token es del admon
+          content:
+            aplication/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_5'
+        "404":
+          description: No se encuentra pedidos
+          content:
+            aplication/json:
+              schema:
+                type: string
+                example: '{"mensaje":"Solo los admon tienen acceso a esta información"}'
+  /admon/pedidos/id_plato:
+    delete:
+      tags:
+      - Administrador
+      summary: Eliminar el id seleccionado
+      parameters:
+      - name: Token
+        in: header
+        description: Se debe tener un token para consultar la lista de todos los pedidos
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+      - name: id_pedido
+        in: query
+        description: id del pedido
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: integer
+      responses:
+        "200":
+          description: El token es del admon
+          content:
+            aplication/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_6'
+        "400":
+          description: fallo de autenticacion
+          content:
+            aplication/json:
+              schema:
+                type: string
+                example: '{}'
+  /admon/productos/id_plato:
+    put:
+      tags:
+      - Administrador
+      parameters:
+      - name: Token
+        in: header
+        description: Se debe tener un token para consultar la lista de platos
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: array
+          items:
+            type: integer
+            format: int64
+      - name: id_plato
+        in: query
+        description: id del plato
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: integer
+      - name: administrador
+        in: query
+        description: usuario administrador
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: integer
+      requestBody:
+        description: Los campos son obligatorios
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/body_2'
+        required: true
+      responses:
+        "200":
+          description: exitosa autenticacion
+          content:
+            aplication/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_7'
+        "204":
+          description: El plato no existe
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_204_1'
+components:
+  schemas:
+    plato:
+      required:
+      - id_plato
+      - nombre
+      - precio
+      type: object
+      properties:
+        id_plato:
+          type: integer
+          example: 2
+        nombre:
+          type: string
+          example: Salmon
+        precio:
+          type: integer
+          example: 2000
+    platos:
+      type: array
+      items:
+        $ref: '#/components/schemas/plato'
+    registro_cliente:
+      required:
+      - contrasena
+      - correo
+      - direccion
+      - id_cliente
+      - nombre_apellido
+      - telefono
+      - usuario
+      type: object
+      properties:
+        id_cliente:
+          type: integer
+          example: 1
+        nombre_apellido:
+          type: string
+          example: romeo salazar
+        correo:
+          type: string
+          example: romeo@gmail.com
+        telefono:
+          type: integer
+          example: 30456045
+        direccion:
+          $ref: '#/components/schemas/direcciones/properties/direccion'
+        usuario:
+          type: string
+          example: romeoo
+        contrasena:
+          type: string
+          example: am4578as*
+    direcciones:
+      required:
+      - direccion
+      - id_direccion
+      type: object
+      properties:
+        id_direccion:
+          type: string
+          example: zona amarilla
+        direccion:
+          type: string
+          example: calle falsa 123
+    pago:
+      required:
+      - id_pago
+      - pago
+      type: object
+      properties:
+        id_pago:
+          type: string
+          example: E
+        pago:
+          type: string
+          example: efectivo
+    estado_preparacion:
+      required:
+      - cancelado
+      - confirmado
+      - entregado
+      - enviando
+      - id_estado
+      - nuevo
+      - preparando
+      type: object
+      properties:
+        id_estado:
+          type: integer
+          example: 1
+        nuevo:
+          type: boolean
+          example: true
+        confirmado:
+          type: boolean
+          example: false
+        preparando:
+          type: boolean
+          example: true
+        enviando:
+          type: boolean
+          example: false
+        cancelado:
+          type: boolean
+          example: false
+        entregado:
+          type: boolean
+          example: false
+    pedido:
+      required:
+      - id_cliente
+      - id_direccion
+      - id_estado
+      - id_pago
+      - id_pedido
+      - id_plato
+      type: object
+      properties:
+        id_pedido:
+          type: integer
+          example: 3
+        id_cliente:
+          $ref: '#/components/schemas/registro_cliente/properties/id_cliente'
+        id_plato:
+          $ref: '#/components/schemas/plato/properties/id_plato'
+        id_pago:
+          $ref: '#/components/schemas/pago/properties/id_pago'
+        id_direccion:
+          $ref: '#/components/schemas/direcciones/properties/id_direccion'
+        id_estado:
+          $ref: '#/components/schemas/estado_preparacion/properties/id_estado'
+    pedidos:
+      type: array
+      items:
+        $ref: '#/components/schemas/pedidos_inner'
+    administrador:
+      required:
+      - contrasena
+      - id_administrador
+      - token
+      - usuario
+      type: object
+      properties:
+        id_administrador:
+          type: integer
+          example: 4
+        usuario:
+          type: string
+          example: amonita@gmail.com
+        contrasena:
+          type: string
+          example: amonita123
+        token:
+          type: string
+          example: abc123rwrw74894wer4545
+    inline_response_200:
+      type: object
+      properties:
+        platos:
+          $ref: '#/components/schemas/platos'
+    inline_response_409:
+      type: object
+      properties:
+        mensaje:
+          type: string
+          example: Ya existe un correo asociado, Ingresa uno nuevo
+    body:
+      type: object
+      properties:
+        usuario:
+          $ref: '#/components/schemas/registro_cliente/properties/usuario'
+        contrasena:
+          $ref: '#/components/schemas/registro_cliente/properties/contrasena'
+    inline_response_200_1:
+      type: object
+      properties:
+        token:
+          type: string
+          example: fdasfasdfjlksa
+        mensaje:
+          type: string
+          example: El token es válido
+    inline_response_200_2:
+      type: object
+      properties:
+        pedido:
+          type: array
+          items:
+            $ref: '#/components/schemas/pedidos_inner'
+    inline_response_204:
+      type: object
+      properties:
+        mensaje:
+          type: string
+          example: No tenemos disponibles el plato que elegiste, selecciona otro por
+            favor
+    body_1:
+      type: object
+      properties:
+        usuario:
+          $ref: '#/components/schemas/administrador/properties/usuario'
+        contrasena:
+          $ref: '#/components/schemas/administrador/properties/contrasena'
+    inline_response_200_3:
+      type: object
+      properties:
+        token:
+          type: string
+          example: fdasfasdfjlksa
+    inline_response_200_4:
+      type: object
+      properties:
+        plato:
+          $ref: '#/components/schemas/plato'
+    inline_response_200_5:
+      type: object
+      properties:
+        pedidos:
+          $ref: '#/components/schemas/pedidos'
+    inline_response_200_6:
+      type: object
+      properties:
+        mensaje:
+          type: string
+          example: 'El pedido ha sido borrado '
+        pedido:
+          $ref: '#/components/schemas/inline_response_200_6_pedido'
+    body_2:
+      type: object
+      properties:
+        nombre:
+          $ref: '#/components/schemas/plato/properties/nombre'
+        precio:
+          $ref: '#/components/schemas/plato/properties/precio'
+    inline_response_200_7:
+      type: object
+      properties:
+        tipo_estado:
+          type: string
+          example: exito
+        mensaje:
+          type: string
+          example: El plato ha sido editado
+        nombre:
+          $ref: '#/components/schemas/plato/properties/nombre'
+        precio:
+          type: integer
+          example: 20000
+    inline_response_204_1:
+      type: object
+      properties:
+        mensaje:
+          type: string
+          example: El plato con el Id no existe
+    pedidos_inner:
+      type: object
+      properties:
+        id_pedido:
+          $ref: '#/components/schemas/pedido/properties/id_pedido'
+        id_cliente:
+          $ref: '#/components/schemas/registro_cliente/properties/id_cliente'
+        nombre_cliente:
+          $ref: '#/components/schemas/registro_cliente/properties/nombre_apellido'
+        id_plato:
+          $ref: '#/components/schemas/plato/properties/id_plato'
+        seleccion_plato:
+          $ref: '#/components/schemas/plato/properties/nombre'
+        id_pago:
+          $ref: '#/components/schemas/pago/properties/id_pago'
+        medio_pago:
+          $ref: '#/components/schemas/pago/properties/pago'
+        id_direccion:
+          $ref: '#/components/schemas/direcciones/properties/id_direccion'
+        direccion_cliente:
+          $ref: '#/components/schemas/direcciones/properties/direccion'
+        id_estado:
+          $ref: '#/components/schemas/estado_preparacion/properties/id_estado'
+    inline_response_200_6_pedido:
+      type: object
+      properties:
+        id_pedido:
+          $ref: '#/components/schemas/pedido/properties/id_pedido'
