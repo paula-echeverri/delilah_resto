@@ -31,7 +31,7 @@ const myQuery=`UPDATE productos SET  nombre_producto=?, precio=?   WHERE id_plat
 sequelize.query(myQuery,{replacements: [nombre_producto,precio,id_plato]})
 .then ((data)=>{
     res.json({status:'updated'});
-}).catch (e=> console.error('algo salido ', e));
+}).catch (e=> console.error(e));
 
 });
 

@@ -1,33 +1,37 @@
+const jwt = require('jsonwebtoken');
+/*const {restart} = require('nodemon');*/
+const connection = require('../db');
+const sequelize = connection();
+
+const secreto = 'p4ul44ndre4';
 
 
-const jwt= require('jsonwebtoken');
-const {restart} = require('nodemon');
-const connection= require('../db');
-const sequelize=connection();
+const validacion_usuario = (req, res, next) => {
+    const {
+        correo
+    } = req.body;
 
-const secreto= 'p4ul44ndre4';
+    const myquery = 'SELECT *FROM usurario where correo=?';
+    sequelize.query(myquery, {
+            replacements: [correo]
+        })
+        .then((response) => {
+            if (response[0][0]) {
 
+                next();
+            } else {
 
-const validacion_usuario=(req, res, next)=>{
-    const{correo}=req.body;
-
-    const myquery='SELECT *FROM usurario where correo=?';
-    sequelize.query(myquery,{replacements:[correo]})
-    .then((response)=>{
-        if(response[0][0]){
-
-            next();
-        }else{
-
-            res.status(404).json({message:'Este usuario no esta registrado'})
-        }
+                res.status(404).json({
+                    message: 'Este usuario no esta registrado'
+                })
+            }
 
 
-    }).catch((error)=>{
+        }).catch((error) => {
 
 
-        console.log(error);
-    })
+            console.log(error);
+        })
 
 
 
@@ -35,82 +39,105 @@ const validacion_usuario=(req, res, next)=>{
 }
 
 
-const validacion_admin=(req, res, next)=>{
-
-    const {correo}=req.body;
 
 
-    if(!correo){
+const validacion_admin = (req, res, next) => {
 
-        res.status(401).json({message: 'No olvides colocar el correo en el body'})
+    const {
+        correo
+    } = req.body;
+
+
+    if (!correo) {
+
+        res.status(401).json({
+            message: 'No olvides colocar el correo en el body'
+        })
     }
-    
-    const myquery='SELECT admon FROM usurario where correo=?';
-    sequelize.query(myquery,{replacements:[correo]})
-    .then((response)=>{
 
-        const admon= response[0][0].admon;
-        if(admon==1){
+    const myquery = 'SELECT admon FROM usurario where correo=?';
+    sequelize.query(myquery, {
+            replacements: [correo]
+        })
+        .then((response) => {
 
-            next();
-        }else{
+            const admon = response[0][0].admon;
+            if (admon == 1) {
 
-            res.status(404).json({message:'Solo los admon tienen acceso a esta información'})
+                next();
+            } else {
+
+                res.status(404).json({
+                    message: 'Solo los admon tienen acceso a esta información'
+                })
 
 
-        }
+            }
 
-    })
+        })
 
 
 }
 
 
-const validacion_constrasena=(req, res, next)=>{
-    const{correo, contrasena}=req.body;
-    const myquery='SELECT contrasena FROM usurario where correo=?';
-    sequelize.query(myquery,{replacements:[correo]})
-    .then((response)=>{
+const validacion_constrasena = (req, res, next) => {
+    const {
+        correo,
+        contrasena
+    } = req.body;
+    const myquery = 'SELECT contrasena FROM usurario where correo=?';
+    sequelize.query(myquery, {
+            replacements: [correo]
+        })
+        .then((response) => {
 
-        const pwd=response[0][0].contrasena;
-        if(pwd==contrasena){
+            const pwd = response[0][0].contrasena;
+            if (pwd == contrasena) {
 
-            next();
-        }else{
+                next();
+            } else {
 
-            res.status(404).json({message:'Intenta nuevamente en ingresar tu contrasena o correo'})
+                res.status(404).json({
+                    message: 'Intenta nuevamente en ingresar tu contrasena o correo'
+                })
 
 
-        }
+            }
 
 
-    })
+        })
 
 }
 
 
-const usuario_existente=(req,res, next)=>{
+const usuario_existente = (req, res, next) => {
 
 
-    const {correo}=req.body;
+    const {
+        correo
+    } = req.body;
 
-    myquery='SELECT * FROM usurario where correo=?';
+    myquery = 'SELECT * FROM usurario where correo=?';
 
-    sequelize.query(myquery,{replacements:[correo]})
-    .then((response)=>{
-
-
-        if(response[0][0]){
-
-                res.status(409).json({message:'Ya existe un correo asociado , Ingresa uno nuevo'})
-        }
-
-        next();
-    })
+    sequelize.query(myquery, {
+            replacements: [correo]
+        })
+        .then((response) => {
 
 
-    }
-   
+            if (response[0][0]) {
+
+                res.status(409).json({
+                    message: 'Ya existe un correo asociado , Ingresa uno nuevo'
+                })
+            }
+
+            next();
+        })
+
+
+}
+
 
 
 
@@ -119,40 +146,166 @@ const usuario_existente=(req,res, next)=>{
 
 
 
-const verificar_token= (req, res, next)=>{
+const verificar_token = (req, res, next) => {
 
-    const token=req.header('token');
+    const token = req.header('token');
 
-    if(!token){
+    if (!token) {
 
-        res.status(401).json({message: 'no hay un token en el requerimiento'})
+        res.status(401).json({
+            message: 'no hay un token en el requerimiento'
+        })
     }
 
-    try{
-       
-        const payload=jwt.verify(token,secreto);
-        req.payload=payload;
+    try {
+
+        const payload = jwt.verify(token, secreto);
+        req.payload = payload;
 
         next();
 
-          
-         
-        
-    }catch(e){
 
-        return res.status(409).json({error:'la sesion ha expirado o no tienes permiso'})
+
+
+    } catch (e) {
+
+        return res.status(409).json({
+            error: 'la sesion ha expirado o no tienes permiso'
+        })
 
     }
 
 }
 
 
-module.exports={
 
-    validacion_constrasena, 
+
+const validacion_estado = (req, res, next) => {
+
+
+    const {estado} = req.body;
+
+    const estados = ['nuevo', 'confirnado', 'preparando', 'enviando', 'cancelado', 'entregado']
+    const estado_encontrado = estados.find(elem => {
+
+        if (elem == estado) {
+            return elem;
+        }
+
+    });
+
+    if (!estado_encontrado) {
+        res.status(400).json({
+            message: `Este estado no es válido, recuerda que  los estados validos son los siguientes:  ${estados}`
+        })
+
+    }
+   next();
+}
+
+
+
+
+
+const validacion_medio_pago=(req,res,next)=>{
+
+    const {metodo_pago}=req.body;
+
+    const tipo_pago=['efectivo','credito'];
+
+    const pago_encontrado=tipo_pago.find(elem=>{
+
+        if(elem==metodo_pago){
+
+            return elem;
+
+
+        }
+
+    })
+
+    if(!pago_encontrado){
+
+        res.status(400).json({
+            message: `Este método de pago  no es válido, recuerda que los metodos de pago son los siguietnes:  ${tipo_pago}`
+        })
+
+
+    }
+
+    next();
+
+
+
+
+
+    
+}
+
+
+
+
+
+const validacion_id = (req, res, next) => {
+
+    const {
+        correo
+    } = req.query;
+    const {
+        metodo_pago
+    } = req.body;
+
+    const hora = moment().format('LTS');
+
+    myquery = `SELECT idUsurario FROM usurario where correo=?`
+
+    sequelize.query(myquery, {
+            replacements: [correo]
+        })
+        .then((response) => {
+            const id = response[0][0].idUsurario;
+            query = `INSERT INTO pedidos (estado, metodo_pago, hora, idUsurario) VALUES ('nuevo',?,?,?)`;
+            sequelize.query(query, ({
+                    replacements: [hora, metodo_pago, id]
+                }))
+                .then((response) => {
+                    const id_pedido = response[0];
+                    req.id_pedido = id_pedido;
+                    next();
+
+
+                }).catch((error) => {
+
+
+                    console.log(error)
+
+
+                })
+
+
+
+        }).catch((error) => {
+
+            console.log(error);
+        })
+
+
+
+
+
+}
+
+
+
+module.exports = {
+
+    validacion_constrasena,
     validacion_usuario,
     verificar_token,
     validacion_admin,
     usuario_existente,
+    validacion_estado,
+    validacion_medio_pago,
+    validacion_id ,
     secreto
 }
