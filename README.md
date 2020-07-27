@@ -1,18 +1,18 @@
 
-#Proyecto DelilahResto
+# Proyecto DelilahResto
 
 #### API para  crear pedidos al restaurante Delilah y como administrador  tener acceso a todo el CRUD
 
-###Se debe clonar el proyecto :
+### Se debe clonar el proyecto :
 
 https://github.com/PaulaE89/delilah_resto.git
 
-###Instalar dependencias
+### Instalar dependencias
 
-*$npm install
+* $npm install
 
 
-###Configuración bases de datos
+### Configuración bases de datos
 
 Se debe tener la siguientes herramientas:
 
@@ -24,6 +24,6 @@ Se debe tener la siguientes herramientas:
 
 * Se tiene que configurar en  db.js , el host , usuario , contraseña y base de datos.
 
-###Para inicializar  la API.
+### Para inicializar  la API.
 
 * Nodemon server.js
