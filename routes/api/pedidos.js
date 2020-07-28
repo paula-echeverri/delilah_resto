@@ -107,7 +107,7 @@ router.get('/mi_pedido', verificar_token, async (req, res) => {
 
 /**Editar pedidos */
 
-router.put('/:idpedido', verificar_token, validacion_estado, async (req, res) => {
+router.put('/:idpedido', verificar_token, validacion_estado,validacion_admin, async (req, res) => {
     const {
         idpedido
     } = req.params;
